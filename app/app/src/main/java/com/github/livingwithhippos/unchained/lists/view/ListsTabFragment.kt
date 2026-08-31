@@ -490,6 +490,7 @@ class DownloadsListFragment : UnchainedFragment(), DownloadListListener {
             viewModel.postEventNotice(ListEvent.NewDownload)
         }
         binding.bRefresh.setOnClickListener {
+            if (_binding == null) return@setOnClickListener
             if (!binding.srLayout.isRefreshing) {
                 binding.srLayout.isRefreshing = true
                 downloadAdapter.refresh()

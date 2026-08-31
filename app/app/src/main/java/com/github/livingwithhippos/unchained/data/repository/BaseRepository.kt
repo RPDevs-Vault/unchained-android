@@ -9,6 +9,7 @@ import com.github.livingwithhippos.unchained.data.model.NetworkResponse
 import com.github.livingwithhippos.unchained.data.model.UnchainedNetworkException
 import com.github.livingwithhippos.unchained.utilities.EitherResult
 import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.Moshi
 import java.io.IOException
 import kotlinx.coroutines.Dispatchers
@@ -94,13 +95,13 @@ open class BaseRepository(private val protoStore: ProtoStore) {
                 try {
                     val error: APIError? = jsonAdapter.fromJson(response.errorBody()!!.string())
                     return@withContext if (error != null) EitherResult.Failure(error)
-                    else EitherResult.Failure(ApiConversionError(-1))
+                    else EitherResult.Failure(ApiConversionError(code))
                 } catch (e: IOException) {
                     Timber.e(e, "Error parsing error body")
-                    // todo: analyze error to return code
-                    return@withContext EitherResult.Failure(
-                        NetworkError(-1, "$errorMessage, http code $code")
-                    )
+                    return@withContext EitherResult.Failure(NetworkError(code, errorMessage))
+                } catch (e: JsonDataException) {
+                    Timber.e(e, "JSON error parsing error body")
+                    return@withContext EitherResult.Failure(NetworkError(code, errorMessage))
                 }
             }
         }

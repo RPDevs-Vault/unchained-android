@@ -58,8 +58,10 @@ class UserProfileFragment : UnchainedFragment() {
         }
         lifecycleScope.launch {
             if (activityViewModel.isTokenPrivate()) {
+                if (_binding == null) return@launch
                 binding.tvLoginDescription.text = getString(R.string.login_type_private)
             } else {
+                if (_binding == null) return@launch
                 binding.tvLoginDescription.text = getString(R.string.login_type_open)
             }
         }
@@ -77,6 +79,7 @@ class UserProfileFragment : UnchainedFragment() {
         }
 
         binding.bAccount.setOnClickListener {
+            if (_binding == null) return@setOnClickListener
             // if we never asked, show a dialog
             if (!preferences.getBoolean(KEY_REFERRAL_ASKED, false)) {
                 // set asked as true
